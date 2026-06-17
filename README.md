@@ -2,105 +2,170 @@
 
 # 🛡️ PhishGuard
 
-### Explainable Machine-Learning Phishing-URL Detection
+### Explainable, privacy-first phishing-URL detection — CLI + web dashboard
 
-A from-scratch (pure-Python, zero-dependency) system that classifies URLs as
-**phishing** or **legitimate** and *explains every decision* — built as an
-open-source MCA final-year research project.
+Detect whether a URL is **phishing** or **legitimate**, and understand *why*.
+Built from scratch in pure Python (zero dependencies) with a premium, fully
+client-side web dashboard. Open source, free for learning & community use.
 
 <p>
   <img alt="Python" src="https://img.shields.io/badge/Python-3.9%2B-00E5FF?style=for-the-badge&logo=python&logoColor=white&labelColor=0D1117">
   <img alt="Zero deps" src="https://img.shields.io/badge/Dependencies-ZERO-FF2E97?style=for-the-badge&labelColor=0D1117">
-  <img alt="CI" src="https://img.shields.io/github/actions/workflow/status/aashishbharti04/phishguard/ci.yml?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=0D1117&color=00FFA3">
+  <img alt="CI" src="https://img.shields.io/github/actions/workflow/status/aashishbharti04/phishguard/ci.yml?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=0D1117&color=00FFA3&label=ci">
   <img alt="License" src="https://img.shields.io/badge/License-MIT-9D4EFF?style=for-the-badge&labelColor=0D1117">
 </p>
+
+<a href="https://aashishbharti04.github.io/phishguard/"><b>🚀 Live demo</b></a> ·
+<a href="docs/REPORT.md">📄 Project report</a> ·
+<a href="docs/ARCHITECTURE.md">🏛️ Architecture</a>
 
 </div>
 
 ---
 
-## 🎯 What it does
+## 📖 Project overview
 
-PhishGuard extracts **18 interpretable lexical & host-based features** from a URL,
-classifies it with machine-learning models **implemented from scratch** (no
-scikit-learn), and produces a **per-prediction explanation** of *why* a URL was
-flagged — addressing the "black box" criticism of ML security tools.
+Phishing is one of the most common cyber-attacks: a deceptive URL tricks users into
+revealing credentials. **PhishGuard** classifies URLs using machine-learning models
+implemented from first principles, and — unlike most "black box" detectors — **explains
+every decision** by showing the URL features that drove it. Detection uses only the URL
+string (no page fetch), so it's fast and privacy-preserving.
 
-```text
-  URL:      http://paypal.secure-login-update.tk/verify?account=123
-  Verdict:  PHISHING
-  Phishing probability: 99.7%
+It ships two ways to use it:
+- a **command-line tool / Python library**, and
+- a **web dashboard** that runs the exact same model **entirely in the browser**.
 
-  Top contributing features:
-    → phishing   suspicious_tld        +1.17
-    → phishing   has_suspicious_word   +0.86
-    → phishing   brand_in_subdomain    +0.59
-```
+## 📸 Screenshots
 
-## 🔬 Research contributions
+<div align="center">
+  <img src="docs/screenshot.svg" alt="PhishGuard web dashboard showing a phishing verdict with an explanation" width="780">
+  <p><sub>The web dashboard — verdict, probability gauge, and per-feature explanation (dark mode).</sub></p>
+</div>
 
-1. **From-scratch implementation** of Logistic Regression and Gaussian Naive Bayes
-   (gradient descent + probabilistic inference) — transparent and dependency-free.
-2. **An interpretable 18-feature URL representation** (lexical + host-based) requiring
-   *no* network lookups, so detection is instant and privacy-preserving.
-3. **Explainable AI layer** — every verdict comes with the ranked features that drove it.
-4. **A reproducible comparative study** (5-fold cross-validation) of the two models.
+## ✨ Features
 
-## 🚀 Quick start
+- 🧠 **Explainable verdicts** — every result lists the top features that influenced it
+- 🔐 **Privacy-first** — 100% client-side; no uploads, no backend, no API keys
+- ⚡ **Instant** — analyzes the URL string only (no network lookups)
+- 🧪 **From-scratch ML** — Logistic Regression + Gaussian Naive Bayes, no scikit-learn
+- 📊 **Reproducible experiments** — 5-fold cross-validation (accuracy/precision/recall/F1/ROC-AUC)
+- 🖥️ **Premium dashboard** — dark/light mode, responsive, accessible, loading/empty/error states
+- 🧰 **CLI + library** — `phishguard <url>` and an importable Python package
+- 🆓 **Zero dependencies** (standard library only)
+
+## 🚀 Installation
 
 ```bash
 git clone https://github.com/aashishbharti04/phishguard
 cd phishguard
+pip install -e .          # installs the `phishguard` command (optional)
+```
+Requires **Python 3.9+**. No third-party packages are needed to run it.
 
-# classify a URL (with explanation)
-python -m phishguard "http://secure-update.paypal.com.login.tk/verify"
+## 🕹️ Usage
 
-# reproduce the comparative experiment (5-fold CV)
-python -m phishguard --evaluate
-
-# (optional) install the console command
-pip install -e .
-phishguard "https://github.com"
+**CLI**
+```bash
+phishguard "http://paypal.secure-login-update.tk/verify"   # classify + explain
+phishguard --evaluate                                       # 5-fold CV comparison
+python -m phishguard "https://github.com"                   # module form (no install)
 ```
 
-## 📊 Results (5-fold cross-validation)
-
-| Model | Accuracy | Precision | Recall | F1 | ROC-AUC |
-|-------|:--------:|:---------:|:------:|:--:|:-------:|
-| Logistic Regression | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
-| Gaussian Naive Bayes | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
-
-> ⚠️ **Honest note (validity):** the bundled dataset is *realistic synthetic data*
-> (generated by `scripts/make_dataset.py`) so the project runs fully offline. Because
-> the phishing/legitimate patterns are well-separated by construction, scores are
-> near-perfect. **For your actual evaluation, swap in a real corpus** (PhishTank, or
-> the Kaggle *Malicious URLs* dataset) — just replace `data/urls.csv` with the same
-> `url,label` columns. Real-world accuracy is typically **92–97%**. This limitation is
-> discussed in [docs/REPORT.md](docs/REPORT.md).
-
-## 🗂️ Project structure
-
-```
-src/phishguard/
-  features.py   # 18 lexical/host URL features
-  models.py     # LogisticRegression + GaussianNB (from scratch)
-  metrics.py    # accuracy/precision/recall/F1/ROC-AUC + k-fold CV
-  explain.py    # per-prediction feature attributions (XAI)
-  dataset.py    # CSV → feature matrix
-  cli.py        # classify / --evaluate
-scripts/make_dataset.py   # reproducible dataset generator
-data/urls.csv             # bundled labelled dataset
-docs/                     # full report, methodology, references
-tests/                    # unit + end-to-end tests
+**Web dashboard (local)**
+```bash
+python -m http.server 8000 --directory web
+# open http://localhost:8000
 ```
 
-## 📚 For your submission
+**Library**
+```python
+from phishguard.dataset import load_xy
+from phishguard.models import LogisticRegression
+from phishguard.features import vectorize
 
-- **[docs/REPORT.md](docs/REPORT.md)** — a complete project-report scaffold (abstract,
-  introduction, literature review, system design, methodology, results, conclusion).
-- **[docs/METHODOLOGY.md](docs/METHODOLOGY.md)** — the math behind the models & features.
-- **[docs/REFERENCES.md](docs/REFERENCES.md)** — citations to seed your bibliography.
+X, y, _ = load_xy()
+model = LogisticRegression().fit(X, y)
+print(model.predict_proba([vectorize("http://login-verify.paypal.com.tk/")])[0])
+```
 
-## 🤝 Contributing / License
+## ⚙️ Configuration
 
-PRs welcome. [MIT](LICENSE) © Aashish Bharti — free to study, extend, and submit.
+PhishGuard needs **no configuration or secrets** to run. Optional knobs are documented
+in [`.env.example`](.env.example):
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `PHISHGUARD_DATA` | Path to a custom `url,label` dataset | bundled `data/urls.csv` |
+| `PHISHGUARD_THRESHOLD` | Phishing decision threshold | `0.5` |
+
+To use a **real-world dataset** (recommended for serious evaluation), replace
+`data/urls.csv` with a public corpus (PhishTank / Kaggle "Malicious URLs"), then run
+`python scripts/export_model.py` to refresh the dashboard model.
+
+## ☁️ Deployment
+
+The web dashboard auto-deploys to **GitHub Pages** via
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) (Settings → Pages → Source:
+GitHub Actions). It's static, so it also works on Netlify/Vercel/Cloudflare/S3.
+Full guide: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+## 🗂️ Folder structure
+
+```
+phishguard/
+├── src/phishguard/      # Python package (core)
+│   ├── features.py      # 18 lexical/host URL features
+│   ├── models.py        # LogisticRegression + GaussianNB (from scratch)
+│   ├── metrics.py       # metrics + k-fold cross-validation
+│   ├── explain.py       # per-prediction explanations (XAI)
+│   ├── dataset.py       # CSV → feature matrix
+│   └── cli.py           # `phishguard` command
+├── web/                 # client-side dashboard (HTML/CSS/JS + model.json)
+├── scripts/             # make_dataset.py, export_model.py
+├── data/urls.csv        # bundled labelled dataset
+├── tests/               # unit + end-to-end tests
+├── docs/                # report, methodology, architecture, deployment, screenshot
+└── .github/             # workflows + issue/PR templates
+```
+
+## ❓ FAQ
+
+**Is the bundled accuracy real?** The bundled dataset is realistic *synthetic* data so the
+project runs offline; scores are near-perfect by construction. Swap in a public dataset for
+real-world numbers (~92–97%). See [docs/REPORT.md](docs/REPORT.md) ("threats to validity").
+
+**Does it upload my URLs?** No. The dashboard analyzes URLs locally in your browser; nothing
+is sent anywhere.
+
+**Why no scikit-learn?** Implementing the models from scratch keeps the project
+dependency-free and demonstrates the underlying math (it's a research project).
+
+**Can I trust the verdict?** It's an educational/probabilistic aid, **not** a guarantee.
+Always verify suspicious links through official channels.
+
+## 🤝 Contributing
+
+Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) and our
+[Code of Conduct](CODE_OF_CONDUCT.md). For security reports, see [SECURITY.md](SECURITY.md).
+
+## 📄 License
+
+[MIT](LICENSE) © Aashish Bharti — free for educational, learning, and community use.
+
+---
+
+<div align="center">
+
+### 📬 Contact & Connect
+
+**Email:** [aashish@marketdoctorsonline.com](mailto:aashish@marketdoctorsonline.com)
+
+[LinkedIn](https://in.linkedin.com/in/aashana1012) ·
+[GitHub](https://github.com/aashishbharti04) ·
+[YouTube](https://www.youtube.com/@CodeWithAsur) ·
+[Instagram](https://www.instagram.com/asurwave1012)
+
+<sub>© PhishGuard. All rights reserved. · This project is open source and available for
+educational, learning, and community contributions.</sub>
+
+</div>

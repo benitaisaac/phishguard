@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhishGuard — Explainable Phishing URL Detector</title>
+  <meta name="description" content="Check whether a URL is phishing or legitimate. An explainable, privacy-first machine-learning detector that runs entirely in your browser — no uploads, no API keys." />
+  <meta name="theme-color" content="#0d1117" />
+  <!-- Open Graph / SEO -->
+  <meta property="og:title" content="PhishGuard — Explainable Phishing URL Detector" />
+  <meta property="og:description" content="Privacy-first, in-browser ML phishing detection with per-prediction explanations." />
+  <meta property="og:type" content="website" />
+  <link rel="canonical" href="https://aashishbharti04.github.io/phishguard/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="bg-blobs" aria-hidden="true"><span class="blob blob-1"></span><span class="blob blob-2"></span></div>
+
+  <header class="nav">
+    <a href="#" class="logo">🛡️ Phish<span class="accent">Guard</span></a>
+    <div class="nav-right">
+      <a class="nav-link" href="https://github.com/aashishbharti04/phishguard" target="_blank" rel="noopener">GitHub</a>
+      <button id="theme-toggle" class="icon-btn" type="button" aria-label="Toggle light/dark theme" title="Toggle theme">🌙</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <span class="badge">Explainable AI · 100% in-browser · Private</span>
+      <h1>Is this link <span class="grad">safe</span>?</h1>
+      <p class="sub">Paste a URL and PhishGuard's machine-learning model tells you whether it's
+        <b>phishing</b> or <b>legitimate</b> — and <b>explains why</b>. Nothing leaves your device.</p>
+
+      <form class="analyzer" id="form" novalidate>
+        <label class="sr-only" for="url-input">URL to check</label>
+        <input id="url-input" type="text" inputmode="url" autocomplete="off" spellcheck="false"
+               placeholder="https://example.com/login" aria-describedby="error-msg" />
+        <button class="btn btn-primary" id="analyze-btn" type="submit">Analyze</button>
+      </form>
+      <div class="examples">
+        <span>Try:</span>
+        <button class="chip" type="button" data-example="http://paypal.secure-login-update.tk/verify?account=1">phishing example</button>
+        <button class="chip" type="button" data-example="https://github.com/aashishbharti04">legit example</button>
+      </div>
+      <p class="error" id="error-msg" role="alert" hidden></p>
+    </section>
+
+    <!-- result region (states swap inside) -->
+    <section class="result-area" id="result-area" aria-live="polite">
+      <!-- empty state -->
+      <div class="state empty" id="state-empty">
+        <div class="state-icon">🔎</div>
+        <p>Enter a URL above to analyze it. Your result and an explanation will appear here.</p>
+      </div>
+
+      <!-- loading / skeleton -->
+      <div class="state" id="state-loading" hidden>
+        <div class="skeleton sk-verdict"></div>
+        <div class="skeleton sk-bar"></div>
+        <div class="skeleton sk-line"></div>
+        <div class="skeleton sk-line"></div>
+        <div class="skeleton sk-line short"></div>
+      </div>
+
+      <!-- result -->
+      <div class="state" id="state-result" hidden>
+        <div class="verdict-card" id="verdict-card">
+          <div class="verdict-head">
+            <span class="verdict-label" id="verdict-label">—</span>
+            <span class="verdict-conf" id="verdict-conf"></span>
+          </div>
+          <div class="gauge"><span id="gauge-fill"></span></div>
+          <p class="verdict-url" id="verdict-url"></p>
+        </div>
+        <div class="explain">
+          <h2>Why this verdict</h2>
+          <ul id="explain-list" class="explain-list"></ul>
+        </div>
+      </div>
+
+      <!-- error state -->
+      <div class="state error-state" id="state-error" hidden>
+        <div class="state-icon">⚠️</div>
+        <p id="error-state-text">Something went wrong.</p>
+      </div>
+    </section>
+
+    <section class="how">
+      <h2>How it works</h2>
+      <div class="steps">
+        <div class="step"><b>1 · Extract</b><p>18 interpretable features are read from the URL string.</p></div>
+        <div class="step"><b>2 · Classify</b><p>A logistic-regression model scores the URL on-device.</p></div>
+        <div class="step"><b>3 · Explain</b><p>The features that drove the decision are shown.</p></div>
+      </div>
+      <p class="disclaimer">⚖️ PhishGuard is an educational tool and not a guarantee. Always verify
+        suspicious links through official channels.</p>
+    </section>
+  </main>
+
+  <footer class="footer" id="footer"></footer>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "phishguard-ml"
-version = "1.0.0"
+version = "1.1.0"
 description = "Explainable machine-learning phishing-URL detection, implemented from scratch in pure Python."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -37,3 +37,12 @@ packages = ["src/phishguard"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+# E701 (compact inline conditionals) and E741 are used intentionally for the
+# small numeric helpers; E501 long lines are tolerated in data/docs strings.
+ignore = ["E701", "E702", "E741", "E501"]
