@@ -51,17 +51,33 @@ def cross_validate(model_factory, X, y, k=5, seed=42):
     """Return averaged metrics over k folds for a fresh model each fold."""
     folds = kfold_indices(len(X), k, seed)
     agg = {"accuracy": 0, "precision": 0, "recall": 0, "f1": 0, "auc": 0}
+
     for i in range(k):
         test_idx = set(folds[i])
+
         Xtr = [X[j] for j in range(len(X)) if j not in test_idx]
         ytr = [y[j] for j in range(len(X)) if j not in test_idx]
+
         Xte = [X[j] for j in folds[i]]
         yte = [y[j] for j in folds[i]]
+
         m = model_factory().fit(Xtr, ytr)
+
         pred = m.predict(Xte)
-        proba = m.predict_proba(Xte)
+
+        if hasattr(m, "predict_proba"):
+            scores = m.predict_proba(Xte)
+        elif hasattr(m, "decision_function"):
+            scores = m.decision_function(Xte)
+        else:
+            scores = pred
+
         mt = metrics(yte, pred)
-        agg["accuracy"] += mt["accuracy"]; agg["precision"] += mt["precision"]
-        agg["recall"] += mt["recall"]; agg["f1"] += mt["f1"]
-        agg["auc"] += roc_auc(yte, proba)
+
+        agg["accuracy"] += mt["accuracy"]
+        agg["precision"] += mt["precision"]
+        agg["recall"] += mt["recall"]
+        agg["f1"] += mt["f1"]
+        agg["auc"] += roc_auc(yte, scores)
+
     return {key: v / k for key, v in agg.items()}

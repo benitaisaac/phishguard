@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from phishguard.features import FEATURE_NAMES, extract, vectorize
 from phishguard.metrics import cross_validate, metrics, roc_auc
-from phishguard.models import GaussianNB, LogisticRegression
+from phishguard.models import GaussianNB, LinearSVM, LogisticRegression
 
 
 # ---- features ----
@@ -29,6 +29,7 @@ def test_suspicious_tld_and_brand_subdomain():
     assert extract("http://x.tk")["suspicious_tld"] == 1.0
     assert extract("https://example.com")["suspicious_tld"] == 0.0
     assert extract("http://paypal.secure-login.tk/")["brand_in_subdomain"] == 1.0
+
 
 
 # ---- models (toy, linearly separable) ----
@@ -74,3 +75,21 @@ def test_pipeline_accuracy_is_high():
     X, y, _ = load_xy()
     res = cross_validate(LogisticRegression, X, y, k=5)
     assert res["accuracy"] > 0.9  # the engineered features should separate well
+
+# ---- svm test -----
+
+def test_svm_learns_toy():
+    X, y = _toy()
+    m = LinearSVM(epochs=1000).fit(X, y)
+    assert m.predict(X) == y
+
+    scores = m.decision_function([[6, 6]])
+    assert scores[0] > 0
+
+def test_svm_cross_validate():
+    X, y = _toy()
+    res = cross_validate(LinearSVM, X, y, k=4)
+
+    assert res["accuracy"] > 0.9
+    assert "auc" in res
+    assert 0.0 <= res["auc"] <= 1.0

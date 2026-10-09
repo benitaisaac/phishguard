@@ -119,3 +119,66 @@ class GaussianNB:
 
     def predict(self, X, threshold=0.5):
         return [1 if p >= threshold else 0 for p in self.predict_proba(X)]
+
+class LinearSVM:
+    """Binary linear SVM trained with hinge-loss subgradient descent."""
+
+    name = "Linear SVM"
+
+    def __init__(self, lr=0.01, epochs=1000, lambda_param=0.01):
+        self.lr = lr
+        self.epochs = epochs
+        self.lambda_param = lambda_param
+        self.w = None
+        self.b = 0.0
+        self.means = self.stds = None
+
+    def fit(self, X, y):
+        self.means, self.stds = _standardize_fit(X)
+        Xs = _standardize_apply(X, self.means, self.stds)
+
+        n, d = len(Xs), len(Xs[0])
+        self.w = [0.0] * d
+        self.b = 0.0
+
+        for _ in range(self.epochs):
+            for i in range(n):
+                yi = 1 if y[i] == 1 else -1
+
+                score = self.b + sum(
+                    self.w[j] * Xs[i][j] for j in range(d)
+                )
+
+                margin = yi * score
+
+                if margin >= 1:
+                    for j in range(d):
+                        self.w[j] -= self.lr * (
+                            2 * self.lambda_param * self.w[j]
+                        )
+                else:
+                    for j in range(d):
+                        self.w[j] -= self.lr * (
+                            2 * self.lambda_param * self.w[j]
+                            - yi * Xs[i][j]
+                        )
+
+                    self.b += self.lr * yi
+
+        return self
+
+    def decision_function(self, X):
+        Xs = _standardize_apply(X, self.means, self.stds)
+
+        return [
+            self.b + sum(
+                self.w[j] * row[j] for j in range(len(row))
+            )
+            for row in Xs
+        ]
+
+    def predict(self, X):
+        return [
+            1 if score >= 0 else 0
+            for score in self.decision_function(X)
+        ]
