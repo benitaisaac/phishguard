@@ -102,6 +102,28 @@ To use a **real-world dataset** (recommended for serious evaluation), replace
 `data/urls.csv` with a public corpus (PhishTank / Kaggle "Malicious URLs"), then run
 `python scripts/export_model.py` to refresh the dashboard model.
 
+## Models
+
+PhishGuard includes machine-learning classifiers implemented from scratch in pure Python.
+
+### Logistic Regression
+Binary logistic regression trained using batch gradient descent.
+
+### Gaussian Naive Bayes
+Gaussian Naive Bayes classifier using class priors and feature-wise Gaussian likelihoods.
+
+### Linear Support Vector Machine
+A binary linear SVM trained using hinge-loss subgradient descent.
+
+The SVM:
+- Standardizes input features before training
+- Converts binary labels internally from `0/1` to `-1/+1`
+- Learns a linear decision boundary
+- Provides a `decision_function()` for signed decision scores
+- Predicts class `1` when the decision score is greater than or equal to zero
+
+The evaluation pipeline supports both probability-based models using `predict_proba()` and margin-based models such as the SVM using `decision_function()`.
+
 ## ☁️ Deployment
 
 The web dashboard auto-deploys to **GitHub Pages** via
